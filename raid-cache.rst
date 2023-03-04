@@ -99,3 +99,6 @@ Enable and start the raid monitor:
 
 That's it - we now have fast SSD cache in front of the RAID array.
 
+ - SPDX-License-Identifier: MIT
+ - Copyright (c) 2023 Gene C
+

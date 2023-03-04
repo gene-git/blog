@@ -332,3 +332,6 @@ This is an example */etc/cron.d/syn-alternate* if the sync script is in */mnt* a
     # sync alternate root
     05 2,14 * * * root /mnt/sync-root
 
+ - SPDX-License-Identifier: MIT
+ - Copyright (c) 2023 Gene C 
+
