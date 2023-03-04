@@ -332,6 +332,26 @@ This is an example */etc/cron.d/syn-alternate* if the sync script is in */mnt* a
     # sync alternate root
     05 2,14 * * * root /mnt/sync-root
 
+Epilogue
+---------
+
+Todo: Can we use the same mechanism to do fast installs.
+
+One can imagine doing pretty much same thing but instead do a fresh install. Of course care 
+needs to be taken to avoid any services that are unique to the template machine. The way
+I might apprach this is take a workstation install (no services) and use same sync 
+script to create a template to install from. 
+May need a little tweaking but then the template could be rsync'ed over the
+local network (or from a USB drive) it should be straightforward to get things installed
+quickly and directly.  Need some scripting work and a good template machine to get the ball rolling.
+
+License
+---------
+
  - SPDX-License-Identifier: MIT
  - Copyright (c) 2023 Gene C 
+
+
+
+
 
