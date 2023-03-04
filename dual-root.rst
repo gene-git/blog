@@ -13,6 +13,10 @@ We expect that hr UEFI bios will boot the alternate root disk if the first one i
 unavailable - but one can always use the bios boot menu, the one that lets user choose which drive to
 boot, where both root disks should be offered. 
 
+I should point out, this is something that is easy to add to any existing machine
+that can provide the disk space.  The downtime is only long enough to add an SSD or hard drive,
+the rest is done while computer is up and running normally.
+
 The assumed starting point is a working linux computer using systemd-boot. We use Archlinux
 but the distro shouldn't play any significant role in dual root setup. 
 We find the Arch rolling release distro convenient and robust.
