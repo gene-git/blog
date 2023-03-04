@@ -9,7 +9,7 @@ Having a hot spare alternate root disk
 The goal is have a system with two separate boot disks, each with the same software installed
 and kept in sync with one another. 
 In the event of a root disk failure, the alternate root disk can be quickly deployed.
-We expect that hr UEFI bios will boot the alternate root disk if the first one is 
+We expect that the UEFI bios will boot the alternate root disk if the first one is 
 unavailable - but one can always use the bios boot menu, the one that lets user choose which drive to
 boot, where both root disks should be offered. 
 
@@ -27,7 +27,7 @@ We find the Arch rolling release distro convenient and robust.
 Introduction
 ------------
 
-Since the requirement is to be able to boot either disk, then neither disk setup for booting
+Since the requirement is to be able to boot either disk, then neither disk being used for booting
 purposes can have any hard dependency on the other disk. That means each disk 
 must have its own *<esp>* and contain the same key partitions holding the operating system.
 
@@ -344,11 +344,11 @@ Epilogue
 
 Since, unlike raid, we are not guaranteed perfect synchronization - if there is more dynamic 
 data its a good idea to keep such things somewhere else safe - like on RAID. For example,
-my mail server bind mounts the mail spool from a RAID-6 array. The other place to keep 
-an eye on is /var/lib - e.g. secondary DNS may keep things here. So may be
-other parts of /var, or perhaps all of it, that might  be good candidates to be held on RAID.
+my mail server bind mounts the mail spool from a RAID-6 array. Another place to keep 
+an eye on is /var/lib - e.g. secondary DNS may keep things here. There well may be
+other parts of /var, or perhaps all of it, that might be good candidates to be held on RAID.
 
-Its also a good idea to think about /etc as well.  Brings me to todo items:
+Its also a good idea to think about /etc as well.  This brings me to a couple of todo items:
 
 Todo #1: Sync Tool Using Inotify
     Build a daemon that monitors an appropriate set of dirs to sync to the alternate. 
