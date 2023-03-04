@@ -14,7 +14,10 @@ unavailable - but one can always use the bios boot menu, the one that lets user 
 boot, where both root disks should be offered. 
 
 I should point out, this is something that is easy to add to any existing machine
-that can provide the disk space.  The downtime is only long enough to add an SSD or hard drive,
+that can provide the disk space. And the alternate disk can be any size as long as there is
+enough space to do the job.  
+
+The downtime is only long enough to add an SSD or hard drive,
 the rest is done while computer is up and running normally.
 
 The assumed starting point is a working linux computer using systemd-boot. We use Archlinux
@@ -339,7 +342,19 @@ This is an example */etc/cron.d/syn-alternate* if the sync script is in */mnt* a
 Epilogue
 ---------
 
-Todo: Can we use the same mechanism to do fast installs.
+Since, unlike raid, we are not guaranteed perfect synchronization - if there is more dynamic 
+data its a good idea to keep such things somewhere else safe - like on RAID. For example,
+my mail server bind mounts the mail spool from a RAID-6 array. The other place to keep 
+an eye on is /var/lib - e.g. secondary DNS may keep things here. So may be
+other parts of /var, or perhaps all of it, that might  be good candidates to be held on RAID.
+
+Its also a good idea to think about /etc as well.  Brings me to todo items:
+
+Todo #1: Sync Tool Using Inotify
+    Build a daemon that monitors an appropriate set of dirs to sync to the alternate. 
+
+Todo #2: Use the same basic mechanism to do fast installs.
+    Build a tool to do fresh installs from a template root drive.
 
 One can imagine doing pretty much same thing but instead do a fresh install. Of course care 
 needs to be taken to avoid any services that are unique to the template machine. The way
