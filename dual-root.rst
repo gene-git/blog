@@ -26,7 +26,7 @@ We find the Arch rolling release distro convenient and robust.
 
 A frequent question is why not just use RAID-1. The short answer is it's not simple to 
 have the <esp> in the raid. While it is doable, it seems hacky and brittle to me, and as one
-person put it even bootctl wont work. See the bottom of this note for a link to
+person put it *bootctl update* doesn't work. See the bottom of this note for a link to
 a mailing list discussion that touches on this.
 
 The best way to do things, in my view, is to use RAID for dynamic data such as mail or databases
