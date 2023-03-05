@@ -30,7 +30,11 @@ person put it even bootctl wont work. See the bottom of this note for a link to
 a mailing list discussion that touches on this.
 
 The best way to do things, in my view, is to use RAID for dynamic data such as mail or databases
-and use dual root for the more stable things like <esp>, /bootm, /usr etc.
+or pretty much anything in /var.  And use dual root for the more stable things like <esp>, /boot, /usr etc.
+
+**Todo**: 
+Create Inotify based sync tool to improve on the simple sync script discussed below.
+
 
 One of the beautiful things about linux is that, more often than not, there is more than
 one way to do things.  And here is one way :)
