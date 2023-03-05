@@ -25,16 +25,16 @@ but the distro shouldn't play any significant role in dual root setup.
 We find the Arch rolling release distro convenient and robust.
 
 A frequent question is why not just use RAID-1. The short answer is it's not simple to 
-have the <esp> in the raid. While it is doable, it seems hacky and brittle to me, and as one
-person put it *bootctl update* doesn't work. See the bottom of this note for a link to
+have the <esp> in the raid. While it is doable, it seems hacky and brittle to me, and 
+that adds risk to the system.  See the bottom of this note for a link to
 a mailing list discussion that touches on this.
 
 The best way to do things, in my view, is to use RAID for dynamic data such as mail or databases
 or pretty much anything in /var.  And use dual root for the more stable things like <esp>, /boot, /usr etc.
 
-**Todo**: 
-Create Inotify based sync tool to improve on the simple sync script discussed below.
+**Todo** ::
 
+    Create Inotify based sync tool to improve on the simple sync script discussed below.
 
 One of the beautiful things about linux is that, more often than not, there is more than
 one way to do things.  And here is one way :)
