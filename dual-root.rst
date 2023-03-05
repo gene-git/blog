@@ -246,8 +246,8 @@ Mounting /boot
 This is a little tricky. I was hoping bootctl -p would be a reliable way to detect which
 <esp> was used for current boot, but I didn't find a reliable way. Instead I wrote a little script
 to identfify which <esp> was used and mount then bind mount it onto /boot. My script is in 
-python, mainly as I found doing it in bash unpleasant. Perhaps someone better with scripting
-might make a bash version.
+python, mainly as I found doing it in bash unpleasant. Perhaps someone with better scripting
+skills might make a bash version if so desired.
 
 So whats needed is to install the script in /usr/bin/bind-mount-efi. 
 Copy the systemd service file to /etc/systemd/system/bind-mount-efi.service. Then enable the service 
