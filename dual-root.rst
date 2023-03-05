@@ -45,9 +45,8 @@ The 2 approaches outlined here both use:
 First Approach:  Thanks to Óscar Amor [#]_
  - Best suited for fresh installs
  - sync <esp>
- - Everthing else is mirrored.
-   - boot is btrfs raid-1 (data and metadata) across 2 disks
-   - root is btrfs raid-1 (data and metadata) across 2 disks
+ - keep kernel and initrd on <esp>
+ - Everthing else is mirrored using btrfs.
  - With only <esp> to sync, rest being mirrored this is the preferable approach.
  - Downtime is longer if upgrading existing system
  - Starting point is fresh install using 2 disks. 
@@ -55,9 +54,9 @@ First Approach:  Thanks to Óscar Amor [#]_
  - If using SSD, then its best if both drives are SSDs
  - Both ways to boot use the same shared /boot partition
 
-A small variation of the second approach is to have use /boot as the <esp>.
-This loses the benefits of the btrfs raid for kernels and initrds and relies
-more on the FAT-32 efi partition to hold them. 
+It may be possible to make a small variation of the second approach and have
+separate btrfs raid-1 boot. It is definitely possible to have 2 boot partitions
+which then would also need to be synced.
 
 .. [#] As discussed on Arch Geneal Mail List [1]_
 .. [1] https://lists.archlinux.org/archives/list/arch-general@lists.archlinux.org/thread/KAMOXQTWQCPCC5KNFF6IOUSFPMNMLIIW/
