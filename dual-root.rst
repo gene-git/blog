@@ -42,24 +42,33 @@ The 2 approaches outlined here both use:
  - each disk has an <esp> partition kept in sync
  - there are no constraints on each disk other than they each have sufficient capacity.
 
-First Approach:  Thanks to Óscar Amor [#]_
+First Approach:  Thanks to Óscar Amor [1]_
+ - Best Approach [2]_
  - Best suited for fresh installs
  - sync <esp>
  - keep kernel and initrd on <esp>
- - Everthing else is mirrored using btrfs.
- - With only <esp> to sync, rest being mirrored this is the preferable approach.
- - Downtime is longer if upgrading existing system
+ - Everything else is mirrored using btrfs raid1
+ - Only <esp> to sync and rest being mirrored
+ - Downtime long if upgrading existing system
  - Starting point is fresh install using 2 disks. 
  - If existing root drive is the 3rd drive, downtime here is also kept to minimum.
- - If using SSD, then its best if both drives are SSDs
- - Both ways to boot use the same shared /boot partition
+ - If using SSD, then its best if both drives are SSDs for raid
+ - Which ever disk's <esp> is used to boot, share same loader configs
 
-It may be possible to make a small variation of the second approach and have
-separate btrfs raid-1 boot. It is definitely possible to have 2 boot partitions
-which then would also need to be synced.
 
-.. [#] As discussed on Arch Geneal Mail List [1]_
-.. [1] https://lists.archlinux.org/archives/list/arch-general@lists.archlinux.org/thread/KAMOXQTWQCPCC5KNFF6IOUSFPMNMLIIW/
+For those who prefer to keep their kernels on a linux filesystem,
+it is easy enough to use a separate /boot partition of type XBOODLDR.
+These would need to be synced in addition to the <esp>. 
+
+I have not tested this, but it may be possible to bind the 2 boot partitions with
+a btrfs raid1. In the usual case, the loader finds the XBOOTLDR partition
+on the same disk as the esp. With raid spanning the 2 disks, each of
+type XBOOTLDR it may or may not work. 
+
+.. [1] As discussed on Arch Geneal Mail List [3]_
+.. [2] See Lennart Poettering's Blog "Linux Boot Partitions" [4]_
+.. [3] https://lists.archlinux.org/archives/list/arch-general@lists.archlinux.org/thread/KAMOXQTWQCPCC5KNFF6IOUSFPMNMLIIW/
+.. [4] https://0pointer.net/blog/ 
 
 Second Approach:
  - best suited with minimal change upgrade  existsing system
@@ -87,10 +96,192 @@ one way to do things.  And here is one way :)
 First Approach
 ================
 
-Write up coming soon.
+Each of the two disks to be used needs its own <esp> and root partitions.
+The <esp> will eventually be mounted as /boot in linux.
+
+Make the <esp> partitions each the same size - 1 - 2 GB provides plenty of room for multiple kernels.
+While btrfs raid mirror doesn't require equal sized partitions, if the disks are different sizes, 
+then there will be unused space. Ignore it or make the 2 roots the same size, and create 
+an extra partition on the larger one. That extra partition will not be part of the raid1 obviously.
+
+Can also be a swap partition if desired, but it plays no direct role here.
+
+If converting an existing setup, then backup everything either to another disk, external 
+or internal or over the network to another computer. Otherwise we assume starting with
+fresh install.
+
+This methos has a tricky part to sort out, which is that we have one root but 2 esp partitions.
+After the machine boots we will mount both <esp> partitions, 
+and we need to know which one was used to boot so that we can sync it to the other one.
+We'll explain how to do that in a robust way a little later.
+
+Partition sizing: 
+----------------
+
+For example, if we use 2 GB <esp> partition and the root partition be rest of disk.
+In this example the <esp> as on sda1 / sdb1, swap partitions are sda2 / sdb2  
+and the root partitions are on sda3 / sdb3.
+
+We are now ready to put filesystems on the disks. First format the <esp> partitions::
+
+    mkfs.vfat -n EFI0 /dev/sda1
+    mkfs.vfat -n EFI1 /dev/sdb1
+
+Each gets its own swap in this example::
+
+    mkswap -L swap0 /dev/sda2
+    mkswap -L swap1 /dev/sdb2
+
+And then the root filesystems::
+
+    mkfs.btrfs -L root -m raid1 -d raid1 /dev/sda2 /dev/sdb2
+
+In this example the first disk is larger than the second, so we use the 
+extra space to create a *data* partition.
+
+Lets look at what we have and identify the UUIDs we'll need as well::
+
+    # lsblk f
+    lsblk -f
+    NAME   FSTYPE FSVER LABEL UUID                                 FSAVAIL FSUSE% MOUNTPOINTS
+    sda
+    ├─sda1 vfat   FAT32 EFI0  6B7E-A837
+    ├─sda2 swap   1     swap0 285c7969-f137-4b3e-b89e-fabe81e44eb1
+    ├─sda3 btrfs        root  a8426465-b755-429d-9604-9c77c2838fda
+    └─sda4 ext4   1.0   data0 315025e3-26a7-4d3e-a3af-cfb8f7cea339
+    sdb
+    ├─sdb1 vfat   FAT32 EFI1  6C48-1623
+    ├─sdb2 swap   1     swap1 3651f9e6-85a1-464d-ac70-74d3d085f577
+    └─sdb3 btrfs        root  a8426465-b755-429d-9604-9c77c2838fda
+
+To continue we'll use temporary mounts::
+
+    mkdir -p /mnt/root
+    mount UUID=a8426465-b755-429d-9604-9c77c2838fda /mnt/root
+
+    cd /mnt/root
+    mkdir -p boot data dev efi etc home mnt opt proc root run srv sys usr var tmp
+
+    mkdir /mnt/root/efi0 /mnt/root/efi1
+    mount /dev/sda1 /mnt/root/efi0
+    mount /dev/sdb1 /mnt/root/efi1
+    mount --bind /mnt/root/efi0 /mnt/root/boot 
+
+At this point either use arch-chroot and install as usual or rsync from an appropriate backup. 
+With this set up the efi is to be mounted bind /boot. We use a bind mount of efi0 onto /boot.
+We will always mount both <esp> partitions under /efi0 and /efi1. We will also be bind 
+mounting one of them onto /boot for convenience.
+
+If you're pulling from backup then regenerate all initrds to be sure they are consistent
+with the current set up. Don't skip this step :)
+
+Make sure that the systemd-loader entries, located in /mnt/root/boot/efi/loader/entries
+have the correct option root line. In our example the load entry for arch kernel
+would be::
+
+    title   Linux Arch
+    linux   /vmlinuz-linux
+    initrd  /initramfs-linux.img
+    initrd  /intel-ucode.img 
+    options root="UUID=a8426465-b755-429d-9604-9c77c2838fda" rootfstype=btrfs rw audit=0
+
+As you see the UUID is the btrfs one shown above.
+
+We now use systemd bootctl to install both <esp>s::
+
+    bootctl --efi-boot-option-description='Linux esp 1' --esp-path /mnt/root/efi1 install
+    bootctl --efi-boot-option-description='Linux esp 0' --esp-path /mnt/root/efi0 install
+
+The second line could just as well be::
+
+    bootctl --esp-path /mnt/root/boot install
+
+Doing it in this order makes the boot order efi0 then efi1. 
+
+Now run bootctl to check everything looks good and check boot order::
+    
+    bootctl --esp-path /mnt/root/efi0 status
+    bootctl --esp-path /mnt/root/efi1 status
+    efibootmgr
+
+Now we still need to adjust the new /mnt/root/etc/fstab. In the fstab we will
+mount both efi partitions. Later we will create a mechanism to bind mount
+whichever <esp> was used onto /boot. Before we do this lets test to make sure
+it boots okay.
+
+Adjust the /mnt/root/fstab to mount each <esp> under /efi0 andf /efi1
+And mount the btrfs root onto /.  You can get the mounts to use by::
+
+    cd /mnt/root
+    genfstab -U .
+
+In our case fstab looks like ::
+
+    # /dev/sda3 UUID=a8426465-b755-429d-9604-9c77c2838fda LABEL=root
+    UUID=a8426465-b755-429d-9604-9c77c2838fda / btrfs rw,relatime,ssd,discard=async,space_cache=v2,subvolid=5,subvol=/  0 0
+
+    # /dev/sda1 UUID=6B7E-A837 LABEL=EFI0
+    UUID=6B7E-A837 /efi0 vfat rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,utf8,errors=remount-ro 0 0
+
+    # /dev/sdb1 UUID=6C48-1623 LABEL=EFI1
+    UUID=6C48-1623 /efi1 vfat  rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,utf8,errors=remount-ro    0 0
+
+    
+Delete the mount of /boot. We will come
+back to this later after we have a mechanism to decide which of the 2 <esp> to
+bind mount onto /boot.
+
+Before we go ahead and boot let's regenerate the initrds - this will of course only work
+provided the active efi was bind mounted onto /boot as per above.
+
+All being well you should be able to boot the system. Next we will deal mounting */boot* and
+syncing the efi partitions - the tricky bit! You don't need to reboot at this point,
+you can continue to the next section where we provide an automatic mechanism to
+have the whichever <esp> was booted to be bind mounted on /boot.
+
+
+Mounting /boot 
+--------------
+
+This is a little tricky. I was hoping bootctl -p would be a reliable way to detect which
+<esp> was used for current boot, but I didn't find a reliable way. Instead I wrote a little script
+to identfify which <esp> was used and mount then bind mount it onto /boot. My script is in 
+python, mainly as I found doing it in bash unpleasant. Perhaps someone better with scripting
+might make a bash version.
+
+So whats needed is to install the script in /usr/bin/bind-mount-efi. 
+Copy the systemd service file to /etc/systemd/system/bind-mount-efi.service. Then enable the service 
+with the usual incantation::
+
+    systemctl enable bind-mount-efi
+
+Next add a mount option to both the efi0 and efi1 mount lines in /etc/fstab 
+(or /mnt/root/etc/fstab if you have not booted machine yet). In my example, the efi0 line 
+gets additional option: x-systemd.before=bind-mount-efi.service. Same of efi1 naturally::
+
+    UUID=6B7E-A837 /efi0 vfat rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,utf8,errors=remount-ro,x-systemd.before=bind-mount-efi.service 0 0
+
+
+What this does is ientify which if the 2 <esp> was booted and then bind mounts that one onto /boot
+
+Now was have /boot being the 'actively booted' efi. We have overcome the trickiest part of all this.
+
+Now  is a good time to reboot - all should work and you should have /boot from the actively booted
+<esp>.
+
+
+Syncing ESPs
+-------------
+
+Now that we know the active <esp> we are able to sync the other <esp> from that one.
+
+This section and the code to identify active <esp> and bind mount it will be made available soon.
+
+
+
 
 Second Approach
----------------
+===============
 
 
 For convenience,  we partition each disk the same way. 
@@ -345,7 +536,7 @@ the *default* line, will need it's filename changed to match.
     
 
 Keeping Disks In Sync
-======================
+---------------------
 
 Finally, we need to keep the disks in sync.  The simplest way to do this is run a little script
 which rsync's from current booted linux to the alternate mounted under /mnt/root1 and
@@ -403,10 +594,10 @@ This is an example */etc/cron.d/syn-alternate* if the sync script is in */mnt* a
 
 
 Epilogue
----------
+========
 
 There is some discussion around dual root and some of the challenges using mdadm RAID1 
-on the arch general mail list [1]_.
+on the arch general mail list [3]_.
 
 This brings me to a couple of todo items:
 
@@ -416,16 +607,18 @@ This brings me to a couple of todo items:
 **Todo** #2: Use same basic mechanism as Second Approach to do fast installs.
     Build a tool to do fresh installs from a template root drive.
 
-One can imagine doing pretty much same thing but instead do a fresh install. Of course care 
-needs to be taken to avoid any services that are unique to the template machine. The way
-I might apprach this is take a workstation install (no services) and use same sync 
-script to create a template to install from. 
+For an install, one can imagine doing pretty much same thing as the second approach,
+but instead do a fresh install from a template. 
+Of course care needs to be taken to avoid any services that are unique to the template machine. 
+One way to apprach this might be to take a workstation install 
+(with no services like mail, databases, etc) and use sync script to create a template to install from. 
+
 May need a little tweaking but then the template could be rsync'ed over the
-local network (or from a USB drive) it should be straightforward to get things installed
-quickly and directly.  Need some scripting work and a good template machine to get the ball rolling.
+local network (or from a USB drive). This should make it reasonably straightforward and 
+fast to get things installed.  Needs some scripting work and a good template machine to get the ball rolling.
 
 License
----------
+========
 
  - SPDX-License-Identifier: MIT
  - Copyright (c) 2023 Gene C 
