@@ -24,6 +24,14 @@ The assumed starting point is a working linux computer using systemd-boot. We us
 but the distro shouldn't play any significant role in dual root setup. 
 We find the Arch rolling release distro convenient and robust.
 
+A frequent question is why not just use RAID-1. The short answer it's not simple to 
+have the <esp> in the raid. While it is doable, it seems hacky and brittle and as one
+person put it even bootctl wont work. See the bottom of this note for link to
+a mailing list discussion that touches on this.
+
+The best way to do things, in my view, is to use RAID for dynamic data such as mail or databases
+and use dual root for the more stable things like <esp>, /bootm, /usr etc.
+
 Introduction
 ------------
 
