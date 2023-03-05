@@ -42,7 +42,7 @@ The 2 approaches outlined here both use:
  - each disk has an <esp> partition kept in sync
  - there are no constraints on each disk other than they each have sufficient capacity.
 
-First Approach:  Thanks to Óscar Amor [1]_
+First Approach:  [1]_
  - Best Approach [2]_
  - Best suited for fresh installs
  - sync <esp>
@@ -65,7 +65,7 @@ a btrfs raid1. In the usual case, the loader finds the XBOOTLDR partition
 on the same disk as the esp. With raid spanning the 2 disks, each of
 type XBOOTLDR it may or may not work. 
 
-.. [1] As discussed on Arch Geneal Mail List [3]_
+.. [1] As discussed on Arch Geneal Mail List [3]_ with thanks to Óscar Amor for the basic idea.
 .. [2] See Lennart Poettering's Blog "Linux Boot Partitions" [4]_
 .. [3] https://lists.archlinux.org/archives/list/arch-general@lists.archlinux.org/thread/KAMOXQTWQCPCC5KNFF6IOUSFPMNMLIIW/
 .. [4] https://0pointer.net/blog/ 
