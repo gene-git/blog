@@ -3,8 +3,8 @@
 
 Dual Root Capable Linux System
 ==============================
-Having a hot spare alternate root disk
----------------------------------------
+AKA hot spare alternate root disk
+---------------------------------
 
 The goal is have a system with two separate boot disks, each with the same software installed
 and kept in sync with one another. 
@@ -144,7 +144,7 @@ For example we might populate the alternate using:
     # if you have any NFS mount points add as needed
 
     alt="/mnt/root1"
-    opt="-av --exclude=/lost+found/ --delete --info=progress"
+    opt="-avxHAX --exclude=/lost+found/ --delete --info=progress"
     rsync $opt /efi/EFI $alt/efi/
     rsync $opt /boot/* $alt/boot/
     rsync $opt /bin /lib /lib64 /usr $alt/
@@ -312,7 +312,7 @@ This is a sample sync script:
     #
     alt="/mnt/root1"
 
-    opt="-a --info=stats --exclude=/lost+found/ --delete"
+    opt="-axHAX --info=stats --exclude=/lost+found/ --delete"
     echo "Syn alternate root:"
 
     echo "  /efi/EFI"
@@ -339,19 +339,30 @@ This is an example */etc/cron.d/syn-alternate* if the sync script is in */mnt* a
     # sync alternate root
     05 2,14 * * * root /mnt/sync-root
 
+
 Epilogue
 ---------
 
-Since, unlike raid, we are not guaranteed perfect synchronization - if there is more dynamic 
-data its a good idea to keep such things somewhere else safe - like on RAID. For example,
-my mail server bind mounts the mail spool from a RAID-6 array. Another place to keep 
+** Caution **
+
+Unlike raid, we are not guaranteed perfect synchronization - more dynamic 
+data need to be kept somewhere safe - like on RAID. This includes things in */var*
+such as mail or databases. 
+
+For example, my mail server bind mounts the mail spool from a RAID-6 array. Another place to keep 
 an eye on is /var/lib - e.g. secondary DNS may keep things here. There well may be
 other parts of /var, or perhaps all of it, that might be good candidates to be held on RAID.
+Its also a good idea to give some thought to /etc as well.  
 
-Its also a good idea to think about /etc as well.  This brings me to a couple of todo items:
+There is some discussion around dual root and some of the challenges using RAID1 
+as an alterntive on the arch general mail list:
+
+    https://lists.archlinux.org/archives/list/arch-general@lists.archlinux.org/thread/KAMOXQTWQCPCC5KNFF6IOUSFPMNMLIIW/
+
+This brings me to a couple of todo items:
 
 Todo #1: Sync Tool Using Inotify
-    Build a daemon that monitors an appropriate set of dirs to sync to the alternate. 
+    Build or use existing inotify tools to monitor an appropriate set of dirs to sync to the alternate. 
 
 Todo #2: Use the same basic mechanism to do fast installs.
     Build a tool to do fresh installs from a template root drive.
