@@ -3,48 +3,94 @@
 
 Dual Root Capable Linux System
 ==============================
+
 AKA hot spare alternate root disk
 ---------------------------------
 
-The goal is have a system with two separate boot disks, each with the same software installed
-and kept in sync with one another. 
-In the event of a root disk failure, the alternate root disk can be quickly deployed.
-We expect that the UEFI bios will boot the alternate root disk if the first one is 
+Goal
+----
+The goal is a system which is resilient to a failure of the root drive.
+In the event of a root disk failure, an alternate root disk can be quickly deployed.
+We expect that the UEFI bios will boot the alternate disk if the first one is 
 unavailable - but one can always use the bios boot menu, the one that lets user choose which drive to
 boot, where both root disks should be offered. 
 
-I should point out, this is something that is easy to add to any existing machine
-that can provide the disk space. And the alternate disk can be any size as long as there is
-enough space to do the job.  
+There are different ways to achieve this but they all share one key aspect which
+is having two drives with each drive having its own *<esp>*.
 
-The downtime is only long enough to add an SSD or hard drive,
-the rest is done while computer is up and running normally.
+We outline two approaches here, the first, and preferable, choice works well when doing
+a fresh install and the second approach works when adding to an existing system
+where the goal is to keep machine running and not start over with new install.
 
-The assumed starting point is a working linux computer using systemd-boot. We use Archlinux
-but the distro shouldn't play any significant role in dual root setup. 
+There are other possibilities but some may be risky and hacky in nature. We advocate
+systems that are robust, clean and transparent.
+
+The methods outlined here will have some partitions which need to be kept synchronized,
+at a minimum this includes the <esp>. Other partitions will either be protected by
+RAID (RAID-1 or higher) or will be kept synchronized. Synchronizing is best limited
+to those areas which are stable rather than things that constantly changing, such as mail 
+or databases. These *dynamic* areas should, if at all possible, be protected by RAID.
+
+Since the requirement is to be able to boot either disk, then neither disk used for booting
+purposes can have any hard dependency on the other disk. That means each disk 
+must have its own *<esp>* and provide the same key partitions holding the 
+operating system.
+
+The 2 approaches outlined here both use:
+
+ - 2 disks
+ - each disk has an <esp> partition kept in sync
+ - there are no constraints on each disk other than they each have sufficient capacity.
+
+First Approach:  Thanks to Óscar Amor [#]_
+ - Best suited for fresh installs
+ - sync <esp>
+ - Everthing else is mirrored.
+   - boot is btrfs raid-1 (data and metadata) across 2 disks
+   - root is btrfs raid-1 (data and metadata) across 2 disks
+ - With only <esp> to sync, rest being mirrored this is the preferable approach.
+ - Downtime is longer if upgrading existing system
+ - Starting point is fresh install using 2 disks. 
+ - If existing root drive is the 3rd drive, downtime here is also kept to minimum.
+ - If using SSD, then its best if both drives are SSDs
+
+A small variation of the second approach is to have use /boot as the <esp>.
+This loses the benefits of the btrfs raid for kernels and initrds and relies
+more on the FAT-32 efi partition to hold them. 
+
+.. [#] As discussed on Arch Geneal Mail List [1]_
+.. [1] https://lists.archlinux.org/archives/list/arch-general@lists.archlinux.org/thread/KAMOXQTWQCPCC5KNFF6IOUSFPMNMLIIW/
+
+Second Approach:
+ - best suited with minimal change upgrade  existsing system
+ - syncing <esp, boot, root, usr and possibly var
+ - dynamic areas (e.g. var) should preferably be on a RAID array.
+   Especially if there are things like mail or databses running.
+   What I do is keep these on separate RAID-6 and bind mount them into var
+ - All thats needed is second with adequate disk space
+ - Downtime is only the few minutes to install 2nd disk.  Configuration while up and running normally.
+ - Starting point is a working linux computer using systemd-boot. 
+ - If using SSD, then best if the primary boot drive uses SSD
+
+
+We use Archlinux but the distro shouldn't play any significant role in dual root setup. 
 We find the Arch rolling release distro convenient and robust.
-
-A frequent question is why not just use RAID-1. The short answer is it's not simple to 
-have the <esp> in the raid. While it is doable, it seems hacky and brittle to me, and 
-that adds risk to the system.  See the bottom of this note for a link to
-a mailing list discussion that touches on this.
-
-The best way to do things, in my view, is to use RAID for dynamic data such as mail or databases
-or pretty much anything in /var.  And use dual root for the more stable things like <esp>, /boot, /usr etc.
-
-**Todo** ::
-
-    Create Inotify based sync tool to improve on the simple sync script discussed below.
 
 One of the beautiful things about linux is that, more often than not, there is more than
 one way to do things.  And here is one way :)
 
-Introduction
-------------
+**Todo** ::
 
-Since the requirement is to be able to boot either disk, then neither disk being used for booting
-purposes can have any hard dependency on the other disk. That means each disk 
-must have its own *<esp>* and contain the same key partitions holding the operating system.
+    Create Inotify based sync tool to improve on the simple sync script below.
+
+First Approach
+================
+
+Write up coming soon.
+
+Second Approach
+---------------
+
 
 For convenience,  we partition each disk the same way. 
 We choose the following standard set of partitions :
@@ -358,28 +404,15 @@ This is an example */etc/cron.d/syn-alternate* if the sync script is in */mnt* a
 Epilogue
 ---------
 
-** Caution **
-
-Unlike raid, we are not guaranteed perfect synchronization - more dynamic 
-data need to be kept somewhere safe - like on RAID. This includes things in */var*
-such as mail or databases. 
-
-For example, my mail server bind mounts the mail spool from a RAID-6 array. Another place to keep 
-an eye on is /var/lib - e.g. secondary DNS may keep things here. There well may be
-other parts of /var, or perhaps all of it, that might be good candidates to be held on RAID.
-Its also a good idea to give some thought to /etc as well.  
-
-There is some discussion around dual root and some of the challenges using RAID1 
-as an alterntive on the arch general mail list:
-
-    https://lists.archlinux.org/archives/list/arch-general@lists.archlinux.org/thread/KAMOXQTWQCPCC5KNFF6IOUSFPMNMLIIW/
+There is some discussion around dual root and some of the challenges using mdadm RAID1 
+on the arch general mail list [1]_.
 
 This brings me to a couple of todo items:
 
-Todo #1: Sync Tool Using Inotify
+**Todo** #1: Sync Tool Using Inotify
     Build or use existing inotify tools to monitor an appropriate set of dirs to sync to the alternate. 
 
-Todo #2: Use the same basic mechanism to do fast installs.
+**Todo** #2: Use same basic mechanism as Second Approach to do fast installs.
     Build a tool to do fresh installs from a template root drive.
 
 One can imagine doing pretty much same thing but instead do a fresh install. Of course care 
