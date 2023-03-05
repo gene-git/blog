@@ -53,6 +53,7 @@ First Approach:  Thanks to Óscar Amor [#]_
  - Starting point is fresh install using 2 disks. 
  - If existing root drive is the 3rd drive, downtime here is also kept to minimum.
  - If using SSD, then its best if both drives are SSDs
+ - Both ways to boot use the same shared /boot partition
 
 A small variation of the second approach is to have use /boot as the <esp>.
 This loses the benefits of the btrfs raid for kernels and initrds and relies
@@ -71,6 +72,7 @@ Second Approach:
  - Downtime is only the few minutes to install 2nd disk.  Configuration while up and running normally.
  - Starting point is a working linux computer using systemd-boot. 
  - If using SSD, then best if the primary boot drive uses SSD
+ - Each boot now has its own /boot, and thus different boot loader config UUIDs
 
 
 We use Archlinux but the distro shouldn't play any significant role in dual root setup. 
