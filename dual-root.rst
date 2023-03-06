@@ -65,10 +65,6 @@ a btrfs raid1. In the usual case, the loader finds the XBOOTLDR partition
 on the same disk as the esp. With raid spanning the 2 disks, each of
 type XBOOTLDR it may or may not work. 
 
-.. [1] As discussed on Arch Geneal Mail List [3]_ with thanks to Óscar Amor for the basic idea.
-.. [2] See Lennart Poettering's Blog "Linux Boot Partitions" [4]_
-.. [3] https://lists.archlinux.org/archives/list/arch-general@lists.archlinux.org/thread/KAMOXQTWQCPCC5KNFF6IOUSFPMNMLIIW/
-.. [4] https://0pointer.net/blog/ 
 
 Second Approach:
  - best suited with minimal change upgrade  existsing system
@@ -116,7 +112,7 @@ and we need to know which one was used to boot so that we can sync it to the oth
 We'll explain how to do that in a robust way a little later.
 
 Partition sizing: 
-----------------
+-----------------
 
 For example, if we use 2 GB <esp> partition and the root partition be rest of disk.
 In this example the <esp> as on sda1 / sdb1, swap partitions are sda2 / sdb2  
@@ -245,33 +241,51 @@ Mounting /boot
 
 This is a little tricky. I was hoping bootctl -p would be a reliable way to detect which
 <esp> was used for current boot, but I didn't find a reliable way. Instead I wrote a little script
-to identfify which <esp> was used and mount then bind mount it onto /boot. My script is in 
-python, mainly as I found doing it in bash unpleasant. Perhaps someone with better scripting
-skills might make a bash version if so desired.
+to identfify which <esp> was used and mount then bind mount it onto /boot. 
 
-So whats needed is to install the script in /usr/bin/dual-root-tool
-Copy the systemd service file to /etc/systemd/system/bind-mount-efi.service. Then enable the service 
-with the usual incantation::
+We provide a tool and a systemd service to take care of this [5]_.
+
+So whats needed is to install the script in */usr/bin/dual-root-tool*
+Then copy the systemd service file to */etc/systemd/system/bind-mount-efi.service*. 
+Then enable the service with the usual incantation::
 
     systemctl enable bind-mount-efi.service
 
 Next add a mount option to both the efi0 and efi1 mount lines in /etc/fstab 
 (or /mnt/root/etc/fstab if you have not booted machine yet). In my example, the efi0 line 
-gets additional option: x-systemd.before=bind-mount-efi.service. Same of efi1 naturally::
+gets additional option: x-systemd.before=bind-mount-efi.service. 
+And the same for efi1 naturally::
 
     UUID=6B7E-A837 /efi0 vfat rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,utf8,errors=remount-ro,x-systemd.before=bind-mount-efi.service 0 0
 
+This will ensure both */efi0* and */efi1* are mounted before the *bind-mount-efi* service,
+which probes these mounts are part of its serivce to determine which of the 2 was used
+to boot the system. Armed with that information, then the active <esp> is mounted on */boot*.
 
-What this does is ientify which if the 2 <esp> was booted and then bind mounts that one onto /boot
+Now that we have */boot* holding the 'actively booted' efi. We have overcome 
+what we belive to be the trickiest part of making this work correctly.
 
-Now was have /boot being the 'actively booted' efi. We have overcome the trickiest part of all this.
+dual-root-tool
+--------------
 
-If dual-root-tool is run with no arguments, it wll print information about the 
-currently booted <esp>. It also supports a "-b" option to bind mount */boot* - this is what the
-*bind-mount-efi.service* uses. It will also be used in the next section to sync the 
-current booted <esp> to the alternate <esp> using the *-s* option.
+Couple of notes on the *dual-root-tool*.
+This version is written in python, as I found doing it in bash unpleasant and I think 
+this is too complex for a bash script; though I am sure there are folks more skilled 
+than me that could make a bash version.  I think it wouldn't be a bad idea to have
+a version of dual-boot-tool written in C. But the python works, and who doesn't 
+have python these days!
 
-Now  is a good time to reboot - all should work and you should have /boot from the actively booted
+The *bind-mount-efi.service* uses */usr/bin/dual-root-tool* to do all the real work.
+If *dual-root-tool* is run with no arguments, it prints information about the 
+currently booted <esp>. 
+
+It also supports a "-b" option to bind mount */boot* - this is what the
+*bind-mount-efi.service* uses. 
+
+It will also be used in the next section to sync the current booted <esp> to the 
+alternate <esp> using the *-s* option.
+
+Now is a good time to reboot - all should work and you should have /boot from the actively booted
 <esp>.
 
 
@@ -283,14 +297,21 @@ This is done by using the sync option of the dual-root-tool::
 
     dual-root-tool -s
 
+You can use use the output of *dual-root-tool* with  no arguments to identify the
+current booted esp - then you can also simeply use rsync. For example if the 
+current booted efi is /efi0, then you can update using::
+
+    rsync -v -axHAX --exclude=/lost+found/ --delete /efi0/* /efi1/
+
 This can be run manually or in Arch by using a pacman hook triggered on /boot. 
-But the preferred method is to use inotify. This requires installing inotify-tools.
+Another method is to use inotify. This requires installing inotify-tools.
 
 Coming soon - inotify based systemd service. 
 
 Copy the duel-root-sync.service file to /etc/systemd/systemd and enable and start it.
 This monitors /boot for changes and calls *dual-root-tool -s* to sync the
 other <esp> whenever an event is detected.
+
 
 
 Second Approach
@@ -629,6 +650,17 @@ One way to apprach this might be to take a workstation install
 May need a little tweaking but then the template could be rsync'ed over the
 local network (or from a USB drive). This should make it reasonably straightforward and 
 fast to get things installed.  Needs some scripting work and a good template machine to get the ball rolling.
+
+End Notes
+=========
+
+.. _end-notes-1:
+
+.. [1] As discussed on Arch General Mail List [3]_ with thanks to Óscar Amor for the basic idea.
+.. [2] See Lennart Poettering's Blog "Linux Boot Partitions" [4]_
+.. [3] https://lists.archlinux.org/archives/list/arch-general@lists.archlinux.org/thread/KAMOXQTWQCPCC5KNFF6IOUSFPMNMLIIW/
+.. [4] https://0pointer.net/blog/ 
+.. [5] Code on github and available as an Arch aur package.
 
 License
 ========
