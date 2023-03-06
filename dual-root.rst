@@ -249,11 +249,11 @@ to identfify which <esp> was used and mount then bind mount it onto /boot. My sc
 python, mainly as I found doing it in bash unpleasant. Perhaps someone with better scripting
 skills might make a bash version if so desired.
 
-So whats needed is to install the script in /usr/bin/bind-mount-efi. 
+So whats needed is to install the script in /usr/bin/dual-root-tool
 Copy the systemd service file to /etc/systemd/system/bind-mount-efi.service. Then enable the service 
 with the usual incantation::
 
-    systemctl enable bind-mount-efi
+    systemctl enable bind-mount-efi.service
 
 Next add a mount option to both the efi0 and efi1 mount lines in /etc/fstab 
 (or /mnt/root/etc/fstab if you have not booted machine yet). In my example, the efi0 line 
@@ -266,6 +266,11 @@ What this does is ientify which if the 2 <esp> was booted and then bind mounts t
 
 Now was have /boot being the 'actively booted' efi. We have overcome the trickiest part of all this.
 
+If dual-root-tool is run with no arguments, it wll print information about the 
+currently booted <esp>. It also supports a "-b" option to bind mount */boot* - this is what the
+*bind-mount-efi.service* uses. It will also be used in the next section to sync the 
+current booted <esp> to the alternate <esp> using the *-s* option.
+
 Now  is a good time to reboot - all should work and you should have /boot from the actively booted
 <esp>.
 
@@ -274,10 +279,18 @@ Syncing ESPs
 -------------
 
 Now that we know the active <esp> we are able to sync the other <esp> from that one.
+This is done by using the sync option of the dual-root-tool::
 
-This section and the code to identify active <esp> and bind mount it will be made available soon.
+    dual-root-tool -s
 
+This can be run manually or in Arch by using a pacman hook triggered on /boot. 
+But the preferred method is to use inotify. This requires installing inotify-tools.
 
+Coming soon - inotify based systemd service. 
+
+Copy the duel-root-sync.service file to /etc/systemd/systemd and enable and start it.
+This monitors /boot for changes and calls *dual-root-tool -s* to sync the
+other <esp> whenever an event is detected.
 
 
 Second Approach
