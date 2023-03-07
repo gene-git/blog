@@ -4,7 +4,7 @@ Some notes on technical topics
 
 ## Notes
 
-   - [Duel Root ](https://github.com/gene-git/blog/blob/master/dual-root.rst)
+   - [Dual Root ](https://github.com/gene-git/blog/blob/master/dual-root.rst)
 
    - [RAID Array with Fast Cache](https://github.com/gene-git/blog/blob/master/raid-cache.rst)
 
