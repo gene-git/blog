@@ -1,10 +1,23 @@
 Sample nftables laptop or workstation.
 
-Allows established / related (so packets are allowed back if the connection was initiated by you.
- Supports inbound DNS server
- Support inbound SSH server
- Uncomment to support inbound WEB server (http and https (http/2 and http/3)
-
 N.B.
   Do not use as is on firewall which is routing between 2 interfaces (i.e. internet to internal).
+
+It allows established / related packets to come back. These packets are returned after a connection is initiated from the local machine. e.g. going to a website, or sending an icmp ping.
+
+It supports local services running on same machine where nftables rules are installewd (these are services which are available to the internet):
+
+ - DNS server
+ - SSH server
+ - WEB server for http and https including http/2 and http/3.
+   Uncomment to turn on.
+
+It also allows blocking from a list of CIDR addresses. This prevents any IP from the blocked list any access to the above services offered on the machine.
+
+N.B. Replies from these "blocked" IPs, are still permitted to come back in if they are related/established. e.g. if you go to website hosted at a blocked IP everything should work normally.
+
+The reason this works, is that these 'blocks' are done in the 'inet' table. To block inbound SYN and in addition block established/related - then add similar blocks for ingress hook in the 'netdev' table. Adding ingress blocks prevents any packets from those IPs from getting in - regardless if related/established. It is very early in the packet flow - see [1] for how the packets flow in nftables.  ingress hook is not available in legacy iptables last I checked.
+
+
+[1] https://wiki.nftables.org/wiki-nftables/index.php/Netfilter_hooks
 
