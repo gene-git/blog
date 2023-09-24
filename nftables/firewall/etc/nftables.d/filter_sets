@@ -1,0 +1,18 @@
+#
+# Sets for filter table
+# 
+set inet_blocks {
+    type ipv4_addr ; flags interval ;
+    elements = {
+        1.0.1.0/24,
+        1.0.2.0/23,
+    }
+}
+
+set inet_whitelist {
+    type ipv4_addr ; flags interval ;
+    elements = {
+        95.216.189.61/32,           # archlinux email
+        3.64.163.0/24,              # archlinux web, wkd
+    }
+}
