@@ -8,6 +8,8 @@ Some notes on technical topics
 
    - [RAID Array with Fast Cache](https://github.com/gene-git/blog/blob/master/raid-cache.rst)
 
+   - [Nftables - samples for workstation & firewall](https://github.com/gene-git/blog/blob/master/nftables)
+
 
 ## License
 
