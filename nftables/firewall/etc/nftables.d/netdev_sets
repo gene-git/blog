@@ -12,6 +12,6 @@ set netdev_blocks {
 set netdev_whitelist {
     type ipv4_addr ; flags interval ;
     elements = {
-        # Add CIDR blocks here if using
+        1.0.1.0/24,
     }
 }
