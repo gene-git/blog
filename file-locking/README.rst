@@ -33,6 +33,9 @@ Summary:
 
 NB. The flock struct contains l_pid - this MUST be 0 for OFD locks and PID for posix locks.
 
+Its also worth noting that locking can be file system dependent. In particular NFS should
+probably be avoided. Since my dominant use case is single machine, multiple process, I use 
+/tmp which is a TMPFS file system and works well.
 
 Python
 ======
