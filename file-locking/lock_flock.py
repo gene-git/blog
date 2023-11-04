@@ -14,7 +14,7 @@ import time     # for main test
 
 @dataclass
 class LockMgr:
-    """Class for keeping track of an item in inventory."""
+    """ Data Class for managing locks."""
     lockfile: str = None
     fd_w: int = -1
     acquired: bool = False
