@@ -5,12 +5,13 @@ Notes on locking
 Linux: C Implementations
 ========================
 
-Locking via files is provided with kernel support via standard C library using fcntl().
+File Locking has linux kernel support via standard C library using fcntl().
 The mechanism uses 'struct flock' as the communication mechanism with (posix) fcntl().
 
-The basic locking mechanism uses F_SETLK which lives at the process level and is the original locking 
-in linux. Around 2015 or so 'open file locks' came to be via F_OFD_SETLK. These are 
-at the open file level. So while F_SETLK is not passed to child processes, OFD locks are.
+The standard locking mechanism uses F_SETLK. This lock lives at the process level 
+and is the original locking in linux. 
+Around 2015 or so 'open file desription' locks came to be via F_OFD_SETLK (See [1]_ and [2]_). 
+These are at the open file level. So while F_SETLK is not passed to child processes, OFD locks are.
 And OFD locks remain attached to the open file handle. This can be enormously useful and
 also surprising.
 
@@ -50,7 +51,7 @@ The python 3.12 docs have examples, while I dont know which system they are
 for, they are not correct for X86_64. 
 
 I provide a little C-program to print out the correct byte sizes which you can then
-map to the python struct letter codes [1]_
+map to the python struct letter codes [3]_
 
 This approach is brittle - its one thing when you are coding with your own
 C structures, its another entirely when using system ones - these sizes should 
@@ -135,4 +136,6 @@ As above, run test in 2 terminals.
 
 Test (5) works.
 
-.. [1] Python struct module: https://docs.python.org/3/library/struct.html
+.. [1] File private locks https://lwn.net/Articles/586904/
+.. [2] Open File Description https://lwn.net/Articles/640404/
+.. [3] Python struct module: https://docs.python.org/3/library/struct.html
