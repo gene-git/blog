@@ -132,7 +132,6 @@ def main():
     """
       - Test lock manager
       - run 2 or more instances
-      run with 'ofd' option to test ofd
     """
     #pdb.set_trace()
     lock_mgr = LockMgr()
