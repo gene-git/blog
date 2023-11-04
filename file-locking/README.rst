@@ -1,9 +1,9 @@
-#################
-Notes on locking:
-#################
+================
+Notes on locking
+================
 
-Linux: C Implementations:
-=========================
+Linux: C Implementations
+========================
 
 Locking via files is provided with kernel support via standard C library using fcntl().
 The mechanism uses 'struct flock' as the communication mechanism with (posix) fcntl().
@@ -33,8 +33,8 @@ Summary:
 NB. The flock struct contains l_pid - this MUST be 0 for OFD locks and PID for posix locks.
 
 
-Python: 
-=======
+Python
+======
 
 Python provides for same locking mechanisms - I recommend only 1 way for file locks in python.
 Python library provides for:
@@ -66,9 +66,9 @@ Wrapper around fcntl() - in spite of name this is NOT C lockf() function.
 Wrapper around flock with OFD support. i.e. this lock is associated with open file descriptor.
 This is what I use and recommend>
 
-=========
-Examples:
-=========
+========
+Examples
+========
 
 C-code
 ======
@@ -88,8 +88,8 @@ Used to make sure we use the correct sizes in python fcntl.fcntl approach.
    
 C-code locking with and without OFD
 
-Tests : c_lock.c
------------------
+Tests: c_lock
+=============
 
 locking use 2 terminals. run c_lock_test in both.
 First will acquire lock second will fail (until first exits)
@@ -106,8 +106,8 @@ First will acquire lock second will fail (until first exits)
 
  Test (1) and (2) both work.
 
-Python : lock_fcntl.py
-======================
+Python : lock_fcntl
+===================
 
 F_SETLK and F_OFD_SETLK tests in python.
 
@@ -123,8 +123,8 @@ run test in 2 terminals as above:
      
 Test (3) and (4) both work.
 
-Python : lock_flock.py
-======================
+Python : lock_flock
+===================
 
 This is what I am using.
 As above, run test in 2 terminals.
