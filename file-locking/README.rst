@@ -47,11 +47,11 @@ require using 'struct' module to 'pack' and 'unpack' the C flock struct. To make
 work the caller must provide the sizes (coded with letters as per the python struct module)
 of each element being packed. 
 
-The python 3.12 docs have examples, while I dont know which system they are 
-for, they are not correct for X86_64. 
+The python 3.12 docs have examples [3]_, and while they may well work for a Sun workstation
+or similar, if you have one, the struct element sizes dont seem correct for X86_64.
 
 I provide a little C-program to print out the correct byte sizes which you can then
-map to the python struct letter codes [3]_
+map to the python struct letter codes [4]_
 
 This approach is brittle - its one thing when you are coding with your own
 C structures, its another entirely when using system ones - these sizes should 
@@ -138,4 +138,5 @@ Test (5) works.
 
 .. [1] File private locks https://lwn.net/Articles/586904/
 .. [2] Open File Description https://lwn.net/Articles/640404/
-.. [3] Python struct module: https://docs.python.org/3/library/struct.html
+.. [3] Python fcntl docs: https://docs.python.org/3/library/fcntl.html
+.. [4] Python struct module: https://docs.python.org/3/library/struct.html
