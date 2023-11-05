@@ -83,45 +83,59 @@ Sample code for F_SETLK and F_OFD_SETLK
 
    make
 
+Builds 2 programs - *flock_sizes* and *c_lock_test*.
+
+To print size of struct flock elements which are Used to enssure we use the correct 
+sizes in python fcntl.fcntl approach.
+
+.. code-block:: bash
+
  * ./flock_sizes
 
-Print size of struct flock elements
-Used to make sure we use the correct sizes in python fcntl.fcntl approach.
+The test program demonstrates locking with and without OFD.
+To run the test progrm see the `Tests: c_lock_test`_ section below.
 
- * ./c_lock_fcntl 
-   
-C-code locking with and without OFD
+Tests: c_lock_test
+==================
 
-Tests: c_lock
-=============
+To run locking tests, use 2 terminals. Run c_lock_test in both.
+The first will acquire lock while second will fail until first exits or is interrupted.
 
-locking use 2 terminals. run c_lock_test in both.
-First will acquire lock second will fail (until first exits)
+Test 1 : Using F_SETLK
+----------------------
 
- * Test 1 : Using F_SETLK
+.. code-block:: bash
 
       ./c_lock_test
 
- * Test 2 : Using F_OFD_SETLK
+Test 2 : Using F_OFD_SETLK
+--------------------------
 
-   repeat test but with argument to turn on OFD
+Repeat test but with argument to turn on OFD
+
+.. code-block:: bash
 
      ./c_lock_test ofd
 
- Test (1) and (2) both work.
+Test (1) and (2) both work.
 
 Python : lock_fcntl
 ===================
 
 F_SETLK and F_OFD_SETLK tests in python.
+Run test in 2 terminals as above:
 
-run test in 2 terminals as above:
+Test 3 : Using F_SETLK
+--------------------------
 
- * Test 3 : Using F_SETLK
+.. code-block:: bash
 
      ./lock_fcntl.py
 
- * Test 4 : Using F_OFD_SETLK
+Test 4 : Using F_OFD_SETLK
+--------------------------
+
+.. code-block:: bash
 
     ./lock_fcntl.py ofd
      
@@ -133,7 +147,10 @@ Python : lock_flock
 This is what I am using.
 As above, run test in 2 terminals.
 
- * Test 5 : 
+Test 5 : 
+--------
+
+.. code-block:: bash
 
      ./lock_fcntl.py
 
