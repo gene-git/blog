@@ -78,19 +78,20 @@ C-code
 ======
 
 Sample code for F_SETLK and F_OFD_SETLK
+To compile:
 
- * build 
+.. code-block:: bash
 
    make
 
 Builds 2 programs - *flock_sizes* and *c_lock_test*.
 
-To print size of struct flock elements which are Used to enssure we use the correct 
-sizes in python fcntl.fcntl approach.
+*flock_sizes* is used To print size of struct flock elements which provide the correct 
+sizes to use in python fcntl.fcntl approach.
 
 .. code-block:: bash
 
- * ./flock_sizes
+    ./flock_sizes
 
 The test program demonstrates locking with and without OFD.
 To run the test progrm see the `Tests: c_lock_test`_ section below.
