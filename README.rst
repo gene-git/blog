@@ -3,6 +3,8 @@ Gene's Tech Blog
 ================
 
 A few notes on technical topics that may be of interest to others.
+Also a placeholder for packages which likely be shared here but
+are not yet available :)
 
 Notes
 =====
