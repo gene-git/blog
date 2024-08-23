@@ -1,0 +1,144 @@
+#
+# iwd-git
+# 
+# Initialize the git repos before running.
+# 
+#     cd src
+#     git clone git://git.kernel.org/pub/scm/network/wireless/iwd.git 
+#     git clone git://git.kernel.org/pub/scm/libs/ell/ell.git
+# 
+# Build :
+#       makepkg
+#
+# Install direct (or put in your repo)
+#
+#   Direct: pacman -U iwd-git-xxx.zst
+#
+# Gene
+#
+PACKAGER="Gene C <arch@sapience.com>"
+PKGEXT=".pkg.tar.zst"
+
+pkgname=iwd-git
+_gitname=(iwd)
+_branch="master"
+
+pkgver=2.19.r59.0.68.r0.240822
+pkgrel=1
+pkgdesc='Internet Wireless Daemon - git'
+arch=('x86_64' )
+url='https://git.kernel.org/cgit/network/wireless/iwd.git/'
+license=('LGPL-2.1-or-later')
+
+depends=('glibc' 'readline' 'libreadline.so' 'gcc-libs')
+makedepends=('git' 'python-docutils' 'dbus' 'systemd')
+optdepends=('qrencode: for displaying QR code after DPP is started')
+_mkpkg_depends=('glibc>minor' 'dbus>minor' 'gcc>major' 'gcc-libs')
+
+# https://lore.kernel.org/iwd/20240122104541.74f1a697@workstation64.local/T/#u
+options=('!lto')
+
+MAKEFLAGS="-j4"
+backups=("etc/iwd/main.conf")
+
+#
+# Generate a Change log from last tag
+#
+changelog=ChangeLog
+if [ ! -f $changelog ] ; then touch $changelog ; fi     # keep makepkg happy if no file
+install=iwd.install
+
+provides=('iwd')
+conflicts=('iwd' 'iwd-rel')
+
+pkgver() {
+	cd "${srcdir}/${_gitname}"
+
+    iwdtag=$(git tag -l  --sort=v:refname | tail -1)
+    iwdhsh=$(git rev-list -n 1 $iwdtag)
+    iwdcnt=$(git rev-list ${iwdhsh}..HEAD --count)
+    dt=$(git log -1 --date=format:%y%m%d --format='%cd')
+
+	cd ../ell 
+    elltag=$(git tag -l  --sort=v:refname | tail -1)
+    ellhsh=$(git rev-list -n 1 $elltag)
+    ellcnt=$(git rev-list ${ellhsh}..HEAD --count)
+    elldt=$(git log -1 --date=format:%y%m%d --format='%cd')
+
+    if (( elldt > dt )) ; then
+        dt=${elldt}
+    fi
+
+    printf "%s.r%s.%s.r%s.%s" $iwdtag $iwdcnt $elltag $ellcnt $dt
+}
+
+prepare() {
+	cd "${srcdir}/${_gitname}"
+
+    # Always do clean build
+
+    git fetch
+    git clean -fdx
+    git pull origin  $_branch
+    git checkout -f $_branch
+
+    cd ../ell
+    git fetch
+    git clean -fdx
+    git pull origin $_branch
+    git checkout -f $_branch
+ }
+
+
+build() {
+	cd "${srcdir}/${_gitname}"
+
+    if [ -f config.status ] ; then
+        make maintainer-clean
+    fi
+	./bootstrap
+
+    # --enable-tools --enable-hwsim --enable-maintainer-mode 
+    # --enable-external-ell
+	./configure --prefix=/usr --localstatedir=/var --sysconfdir=/etc \
+		--libexecdir=/usr/lib/iwd --enable-wired --enable-ofono --enable-tools --enable-year2038
+
+    #
+    # Do build
+    #
+	make
+
+    #
+    # Make Changelog
+    #
+    ../../gen-changelog > ../../$changelog
+    cd ../ell
+    ../../gen-changelog >> ../../$changelog
+     
+}
+check() {
+	cd "${srcdir}/${_gitname}"
+    make check
+}
+
+package() {
+	cd "${srcdir}/${_gitname}"
+  	make install DESTDIR="${pkgdir}"
+
+    #
+    # docs
+    #
+	install -Dm 644 README -t "${pkgdir}/usr/share/doc/${pkgname}"
+	install -Dm 644 ChangeLog -t "${pkgdir}/usr/share/doc/${pkgname}"
+
+    #
+    # use network group instead of netdev for unprivileged access
+    #
+    echo "Changing dbus policy group to network"
+
+    file="${pkgdir}/usr/share/dbus-1/system.d/iwd-dbus.conf"
+    sed -i -e 's/group="netdev"/group="network"/' $file
+
+    file="${pkgdir}/usr/share/dbus-1/system.d/ead-dbus.conf"
+    sed -i -e 's/group="netdev"/group="network"/' $file
+} 

@@ -1,0 +1,16 @@
+#!/usr/bin/bash
+#
+# Generate Changelog from last tag to head
+# Use in git package builds
+# Gene C
+#
+
+repo=$(basename $(pwd))
+tag=$(git tag -l  --sort=v:refname | tail -1)
+echo ""
+echo "#--------------------------------------"
+echo "# Changelog     : $repo"
+echo "# since version : ${tag}"
+echo "#"
+git log --pretty=format:"%ad | %s%d " --graph --date=short ${tag}..HEAD
+

@@ -1,0 +1,68 @@
+
+#--------------------------------------
+# Changelog     : iwd
+# since version : 2.19
+#
+* 2024-08-22 | build: Require at least version 0.68 when building with external ELL (HEAD -> master, origin/master, origin/HEAD) 
+* 2024-08-19 | auto-t: Add test for BasicServiceSets 
+* 2024-08-19 | auto-t: Add ExtendedServiceSet property 
+* 2024-08-19 | network: add back network_bss_list_clear 
+* 2024-08-19 | network: remove BasicServiceSet DBus registration code 
+* 2024-08-19 | station: move BasicServiceSet DBus management into station 
+* 2024-08-19 | network: add __network_path_append_bss 
+* 2024-08-19 | eapol: Fix bogus warning 
+* 2024-08-12 | auto-t: add SAE-H2E test for setting the default ECC group 
+* 2024-08-12 | sae: support default group for H2E 
+* 2024-08-12 | client: add station command "get-bsses" 
+* 2024-08-12 | client: refactor cmd_connect() and add find_network() 
+* 2024-08-12 | client: add BasicServiceSet interface 
+* 2024-08-12 | client: Add BasicServiceSets property to network 
+* 2024-08-12 | client: add net.connman.iwd.BasicServiceSet definition 
+* 2024-08-12 | client: separate property header and values into two functions 
+* 2024-08-12 | doc: document BasicServiceSet API 
+* 2024-08-12 | station: add ConnectedAccessPoint property 
+* 2024-08-12 | network: remove network_bss_list_clear 
+* 2024-08-12 | network: add ExtendedServiceSet DBus property 
+* 2024-08-12 | station: use network_bss_{start,stop}_update 
+* 2024-08-12 | network: Add BasicServiceSet object 
+* 2024-08-12 | dbus: Add net.connman.iwd.BasicServiceSet interface 
+* 2024-08-03 | netdev: Simplify FILS handling in netdev_connect_common 
+* 2024-08-03 | fils: Ensure capability checks are consistent 
+* 2024-08-03 | netdev: Create owe_sm for fullmac connections 
+* 2024-08-03 | ie: Add IE_AKM_IS_OWE 
+* 2024-08-03 | wiphy: Fix use of wiphy_has_feature 
+* 2024-07-31 | monitor: Mask flags from attribute identifier 
+* 2024-07-31 | monitor: Decode RMNet Mux Identifier 
+* 2024-07-31 | station: improve zero oper class neighbor report workaround 
+* 2024-07-26 | monitor: Update to the new ell l_netlink_send API 
+* 2024-07-26 | netdev: Update to the new l_netlink_send API 
+* 2024-07-26 | wired: Update to the new l_netlink_send API 
+* 2024-07-26 | qemu: Remove unsupported command line arguments 
+* 2024-07-26 | monitor: Use genl APIs instead of open coding 
+* 2024-07-26 | monitor: fix the CQM RSSI threshold attribute 
+* 2024-07-24 | auto-t: fix several DPP tests after station state changes 
+* 2024-07-24 | auto-t: add DPP tests for state change checks 
+* 2024-07-24 | dpp: explicitly disconnect station if enrollee is started 
+* 2024-07-24 | station: add station_get_autoconnect 
+* 2024-07-24 | dpp: factor out PKEX/DPP start prep into function 
+* 2024-07-24 | auto-t: don't print valgrind log if there was no error 
+* 2024-07-24 | scan: fix invalid read when canceling an ongoing scan 
+* 2024-07-23 | client: use display_table_row for IPv6 in station 
+* 2024-07-18 | auto-t: a few random autotest fixes 
+* 2024-07-18 | auto-t: Add deauth during the 4-way handshake test 
+* 2024-07-18 | auto-t: add reason/test arguments to hostapd deauthenticate 
+* 2024-07-18 | auto-t: add clear_events() to IWD class 
+* 2024-07-18 | station: add handshake-started debug event 
+* 2024-07-18 | eapol: move HANDSHAKE_STARTED_EVENT to eapol_start() 
+* 2024-07-18 | netdev: handle disconnect event during a connection 
+* 2024-07-18 | station: update logic for handshake failure 
+* 2024-07-18 | station: handle NETDEV_RESULT_DISCONNECTED 
+* 2024-07-18 | netdev: add NETDEV_RESULT_DISCONNECTED 
+* 2024-07-18 | station: print unknown channel number in neighbor report 
+* 2024-07-12 | p2putil: remove static from const strlen 
+* 2024-07-12 | main: update usage with logger option 
+* 2024-07-11 | main: set the identity in the logger 
+#--------------------------------------
+# Changelog     : ell
+# since version : 0.68
+#
