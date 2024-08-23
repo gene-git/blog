@@ -1,5 +1,14 @@
 #
 # iwd-git
+#
+# Copy this iwd-git directory :
+# 
+# Using git:
+#   git clone --no-checkout git@github.com:gene-git/blog.git
+#   cd blog
+#   git sparse-checkout init
+#   git sparse-checkout set arch-package/iwd-git
+#   git checkout arch-package/iwd-git
 # 
 # Initialize the git repos before running.
 # 
