@@ -10,9 +10,12 @@
 # Build :
 #       makepkg
 #
-# Install direct (or put in your repo)
+# Install from iwd-git-xx.zst file :
 #
 #   Direct: pacman -U iwd-git-xxx.zst
+#
+# To go back to the arch package :
+#   pacman -Syu iwd
 #
 # Gene
 #
