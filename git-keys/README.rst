@@ -65,7 +65,7 @@ The old pgp key servers suffer a *key* (🤔) design flaw that allows anyone to 
 to be any person/email. The assumption was that whoever downloaded the key would find a different
 way to verify the key. Clearly, pgp keyservers do not present a robust methodology. 
 
-WKD has the benefit that that the key is available from the same domain as the email ID of the key
+WKD has the benefit that the key is available from the same domain as the email ID of the key
 and it is therefore reasonable to hold a higher degree of initial trust in the 
 website which is the same domain as the key owner's email.
 
@@ -79,14 +79,13 @@ To install directly when using sequoia:
 
     sq network wkd search arch@sapience.com
 
-and using gpg we recommend simply avoiding their builtin web server library and instead
+and using gpg we recommend simply avoiding their builtin web server access methods and instead use:
 
 .. code:: bash
 
     curl $(gpg-wks-client --print-wkd-url arch@sapience.com) | gpg --import
 
-
-This works fine provided curl is built against openssl (or other non-gnutls library) [debian-curl]_. 
+This works provided curl is built against openssl (or other non-gnutls library) [debian-curl]_. 
 
 The *gpg-wks-client* part of the command, prints the WKD server URL of the key. In WKD, the url where
 the key is available is generated from the username part of the email address. Also, 
