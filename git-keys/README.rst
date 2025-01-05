@@ -7,7 +7,7 @@ As of December 31, 2024 all git tags are signed using key *arch@sapience.com* (o
 We describe how to get and install the signing key to your key ring. Once the key is in the keyring then
 git can verify a tag using:
 
-.. code::bash
+.. code:: bash
 
     git tag -v [tag-name]
 
@@ -15,7 +15,7 @@ git can verify a tag using:
 For arch package builders, makepkg does this when using the alternative *source* line
 in the PKGBUILD file which is of the form:
 
-.. code::bash
+.. code:: bash
 
     *source=...#tag=${pkgver}?signed")*
 
@@ -41,13 +41,13 @@ Installing via Key File
 The key file for the first three download methods is the usual Openpgp text format (ascii armored version).
 To install the file key once you have the file use :
 
-.. code::bash
+.. code:: bash
 
     gpg --import [key_file]
 
 for gnupg or for sequoia
 
-.. code::bash
+.. code:: bash
 
     sq key import [key_file]
 
@@ -70,13 +70,13 @@ websites. We provide a simple work around for this case.
 
 To install directly when using sequoia:
 
-.. code::bash
+.. code:: bash
 
     sq network wkd search arch@sapience.com
 
 and using gpg we recommend simply avoiding their builtin web server library and instead
 
-.. code::bash
+.. code:: bash
 
     curl $(gpg-wks-client --print-wkd-url arch@sapience.com) | gpg --import
 
