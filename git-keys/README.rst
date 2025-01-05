@@ -36,11 +36,11 @@ The key is available :
 .. raw:: html
  
     <ul>
-        <li> on github at https://github.com/gene-git/blog/git-keys </li>
-        <li>  on the authors website  https://www.sapience.com/tech </li>
-        <li>  For Arch AUR package it is included in the keys/pgp directory.
-              <br/>NB you will need a fresh copy of the package as older versions did not include the key</li>
-        <li>  via WKD  </li>
+        <li> on github at https://github.com/gene-git/blog/tree/master/git-keys</li>
+        <li> on the authors website  https://www.sapience.com/tech </li>
+        <li> The Arch AUR package has the key included in the keys/pgp directory.
+             <br/>NB you will need a fresh copy of the package as older versions did not include the key</li>
+        <li> via WKD  </li>
     </ul>
 
 
