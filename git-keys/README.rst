@@ -2,10 +2,8 @@
 Git Signing Keys
 ================
 
-As of December 31, 2024 all git tags are signed by our git signing key 
-`arch@sapience.com <https://www.sapience.com/keys/arch-7CCA1BA66669F3273DB52678E5B81343AB9809E1.pub.asc>`_
+As of December 31, 2024 all git tags are signed by our *arch@sapience.com* signing key.
 
-The key has an openpgp ID hash of *7CCA1BA66669F3273DB52678E5B81343AB9809E1*.
 
 To install the signing key to your key ring it can be downloaded directly or by using
 Web Key directory (WKD). 
@@ -31,18 +29,20 @@ makepkg will verify the source code.
 Getting the Key
 ---------------
 
-The key is available :
+The key has an openpgp ID hash of *7CCA1BA66669F3273DB52678E5B81343AB9809E1*.
+and is available from our website
+`arch@sapience.com <https://www.sapience.com/keys/arch-7CCA1BA66669F3273DB52678E5B81343AB9809E1.pub.asc>`_
+
+It is also available :
 
 .. raw:: html
  
     <ul>
-        <li> on github at https://github.com/gene-git/blog/tree/master/git-keys</li>
-        <li> on the authors website  https://www.sapience.com/tech </li>
+        <li> on github at <a href="https://github.com/gene-git/blog/tree/master/git-keys">github git-keys</a></li>
         <li> The Arch AUR package has the key included in the keys/pgp directory.
              <br/>NB you will need a fresh copy of the package as older versions did not include the key</li>
         <li> via WKD  </li>
     </ul>
-
 
 Installing from Key File
 ------------------------
