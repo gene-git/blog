@@ -29,7 +29,7 @@ makepkg will verify the source code.
 Getting the Key
 ---------------
 
-The key has an openpgp ID hash of *7CCA1BA66669F3273DB52678E5B81343AB9809E1*.
+The key has an openpgp ID hash of *7CCA1BA66669F3273DB52678E5B81343AB9809E1* 
 and is available from our website
 `arch@sapience.com <https://www.sapience.com/keys/arch-7CCA1BA66669F3273DB52678E5B81343AB9809E1.pub.asc>`_
 
@@ -38,10 +38,10 @@ It is also available :
 .. raw:: html
  
     <ul>
-        <li> on github at <a href="https://github.com/gene-git/blog/tree/master/git-keys">github git-keys</a></li>
+        <li> On github at <a href="https://github.com/gene-git/blog/tree/master/git-keys">github git-keys</a></li>
         <li> The Arch AUR package has the key included in the keys/pgp directory.
              <br/>NB you will need a fresh copy of the package as older versions did not include the key</li>
-        <li> via WKD  </li>
+        <li> Using WKD </li>
     </ul>
 
 Installing from Key File
