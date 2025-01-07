@@ -32,22 +32,16 @@ The key has an openpgp ID hash of *7CCA1BA66669F3273DB52678E5B81343AB9809E1*
 and is available from our website
 `arch@sapience.com <https://www.sapience.com/keys/arch-7CCA1BA66669F3273DB52678E5B81343AB9809E1.pub.asc>`_
 
-It is also available :
-
-.. raw:: html
- 
-    <ul>
-        <li> On github at <a href="https://github.com/gene-git/blog/tree/master/git-keys">github git-keys</a></li>
-        <li> The Arch AUR package has the key included in the keys/pgp directory.
-             <br/>NB you will need a fresh copy of the package as older versions did not include the key</li>
-        <li> Using WKD </li>
-    </ul>
+* On github at `git-keys <https://github.com/gene-git/blog/tree/master/git-keys">`_
+* The Arch AUR package has the key included in the keys/pgp directory.
+  (Get a fresh copy of package)
+* Using WKD
 
 Installing from Key File
 ------------------------
 
 The key is an OpenPGP public key, and beside for the WKD file which is binary, it
-is in the standard OpenPGP ascii armoreed text format.
+is in the standard OpenPGP ascii armored text format.
 
 To install the key into your keyring once you have the file use :
 
