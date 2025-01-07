@@ -4,11 +4,10 @@ Git Signing Keys
 
 As of December 31, 2024 all git tags are signed by our *arch@sapience.com* signing key.
 
-
 To install the signing key to your key ring it can be downloaded directly or by using
 Web Key directory (WKD). 
 
-After the key is in your keyring then git can verify the source at a tag using:
+After the key is in your keyring then git can verify the source with a tag using:
 
 .. code:: bash
 
@@ -24,7 +23,7 @@ provided in the PKGBUILD file which is of the form:
 
 The *?signed* is what triggers the git tag verification.
 Simply use this instead of the default source line, which does not end with *signed*, and 
-makepkg will verify the source code.
+makepkg will then verify the source code.
 
 Getting the Key
 ---------------
@@ -47,7 +46,9 @@ It is also available :
 Installing from Key File
 ------------------------
 
-The key file for the first three download methods is the usual Openpgp text format (ascii armored version).
+The key is an OpenPGP public key, and beside for the WKD file which is binary, it
+is in the standard OpenPGP ascii armoreed text format.
+
 To install the key into your keyring once you have the file use :
 
 .. code:: bash
@@ -66,7 +67,7 @@ for sequoia.
 Installing via WKD
 ------------------
 
-Web Key directory (WKD) has come to replace the older and to be avoided pgp servers.
+Web Key directory (WKD) has replaced the older and to be avoided pgp servers.
 
 The old pgp key servers suffer a *key* (🤔) design flaw that allows anyone to upload a key claiming
 to be any person/email. The assumption was that whoever downloaded the key would find some other
@@ -76,7 +77,7 @@ In contrast, WKD has the benefit that the key is available from the website of t
 as the key owners email ID and it is therefore quite reasonable that this approach offers 
 a higher degree of initial trust.
 
-Both gpg and sequioa support dowloading the key directly via WKD. However we have found that tools built
+Both gpg and sequoia support dowloading the key directly via WKD. However we have found that tools built
 on gnutls, like gpg, can sometimes fail to correctly handshake with more modern, high security
 websites. We provide a simple work around for this case.
 
