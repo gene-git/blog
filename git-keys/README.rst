@@ -32,7 +32,7 @@ The key has an openpgp ID hash of *7CCA1BA66669F3273DB52678E5B81343AB9809E1*
 and is available from our website
 `arch@sapience.com <https://www.sapience.com/keys/arch-7CCA1BA66669F3273DB52678E5B81343AB9809E1.pub.asc>`_
 
-* On github at `git-keys <https://github.com/gene-git/blog/tree/master/git-keys">`_
+* On github at `git-keys <https://github.com/gene-git/blog/tree/master/git-keys>`_
 * The Arch AUR package has the key included in the keys/pgp directory.
   (Get a fresh copy of package)
 * Using WKD
